@@ -3,8 +3,8 @@
 namespace BT\DataTables;
 
 use BT\Modules\Users\Models\User;
-use Yajra\DataTables\Services\DataTable;
 use Yajra\DataTables\Html\Column;
+use Yajra\DataTables\Services\DataTable;
 
 class UsersDataTable extends DataTable
 {
@@ -16,7 +16,9 @@ class UsersDataTable extends DataTable
      */
     public function dataTable($query)
     {
-        return datatables()->eloquent($query)->addColumn('action', 'users._actions')
+
+        return datatables()->eloquent($query)
+            ->addColumn('action', 'users._actions')
             ->editColumn('user_type', '{{ trans(\'bt.\' . $user_type)}}')
             ->editColumn('name', function (User $user) {
                 return '<a href="/users/' . $user->id . '/edit/' . $user->user_type . '">' . $user->name . '</a>';
@@ -32,7 +34,7 @@ class UsersDataTable extends DataTable
      */
     public function query(User $model)
     {
-        $models = $model->newQuery()->select('id', 'name', 'email', 'client_id')
+        $models = $model->newQuery()->select('id', 'name', 'email', 'client_id')->orderBy('created_at', 'desc')
             ->userType(request('userType'));
 
         return $models;
@@ -61,7 +63,8 @@ class UsersDataTable extends DataTable
     {
         return [
             Column::make(trans('bt.name'))
-                ->data('name'),
+                ->data('name')
+                ->orderable(false),
             Column::make(trans('bt.email'))
                 ->data('email'),
             Column::make(trans('bt.type'))
